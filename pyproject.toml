@@ -8,6 +8,7 @@ authors = ["Logan Yang <logancyang@gmail.com>"]
 python = "^3.6"
 fastapi = "^0.61.0"
 uvicorn = "^0.11.8"
+requests = "^2.24.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

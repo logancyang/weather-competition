@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "weather-competition"
+version = "0.1.0"
+description = "A weather scoring and comparison tool for a list of cities"
+authors = ["Logan Yang <logancyang@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+fastapi = "^0.61.0"
+uvicorn = "^0.11.8"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

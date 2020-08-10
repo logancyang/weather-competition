@@ -1,0 +1,282 @@
+[
+    {
+        "id": 1796236,
+        "name": "Shanghai",
+        "state": "",
+        "country": "CN",
+        "coord": {
+            "lon": 121.458061,
+            "lat": 31.222219
+        }
+    },
+    {
+        "id": 1809858,
+        "name": "Guangzhou",
+        "state": "",
+        "country": "CN",
+        "coord": {
+            "lon": 113.25,
+            "lat": 23.116671
+        }
+    },
+    {
+        "id": 1816670,
+        "name": "Beijing",
+        "state": "",
+        "country": "CN",
+        "coord": {
+            "lon": 116.397232,
+            "lat": 39.907501
+        }
+    },
+    {
+        "id": 1819729,
+        "name": "Hong Kong",
+        "state": "",
+        "country": "HK",
+        "coord": {
+            "lon": 114.157692,
+            "lat": 22.285521
+        }
+    },
+    {
+        "id": 1850147,
+        "name": "Tokyo",
+        "state": "",
+        "country": "JP",
+        "coord": {
+            "lon": 139.691711,
+            "lat": 35.689499
+        }
+    },
+    {
+        "id": 1880252,
+        "name": "Singapore",
+        "state": "",
+        "country": "SG",
+        "coord": {
+            "lon": 103.850067,
+            "lat": 1.28967
+        }
+    },
+    {
+        "id": 4140963,
+        "name": "Washington, D.C.",
+        "state": "DC",
+        "country": "US",
+        "coord": {
+            "lon": -77.036369,
+            "lat": 38.895111
+        }
+    },
+    {
+        "id": 4174757,
+        "name": "Tampa",
+        "state": "FL",
+        "country": "US",
+        "coord": {
+            "lon": -82.458427,
+            "lat": 27.947519
+        }
+    },
+    {
+        "id": 4560349,
+        "name": "Philadelphia",
+        "state": "PA",
+        "country": "US",
+        "coord": {
+            "lon": -75.163788,
+            "lat": 39.952339
+        }
+    },
+    {
+        "id": 4671654,
+        "name": "Austin",
+        "state": "TX",
+        "country": "US",
+        "coord": {
+            "lon": -97.743057,
+            "lat": 30.267151
+        }
+    },
+    {
+        "id": 4684888,
+        "name": "Dallas",
+        "state": "TX",
+        "country": "US",
+        "coord": {
+            "lon": -96.806671,
+            "lat": 32.783058
+        }
+    },
+    {
+        "id": 4699066,
+        "name": "Houston",
+        "state": "TX",
+        "country": "US",
+        "coord": {
+            "lon": -95.363274,
+            "lat": 29.763281
+        }
+    },
+    {
+        "id": 4887398,
+        "name": "Chicago",
+        "state": "IL",
+        "country": "US",
+        "coord": {
+            "lon": -87.650047,
+            "lat": 41.850029
+        }
+    },
+    {
+        "id": 4930956,
+        "name": "Boston",
+        "state": "MA",
+        "country": "US",
+        "coord": {
+            "lon": -71.059769,
+            "lat": 42.358429
+        }
+    },
+    {
+        "id": 5128638,
+        "name": "New York",
+        "state": "NY",
+        "country": "US",
+        "coord": {
+            "lon": -75.499901,
+            "lat": 43.000351
+        }
+    },
+    {
+        "id": 5359777,
+        "name": "Irvine",
+        "state": "CA",
+        "country": "US",
+        "coord": {
+            "lon": -117.823112,
+            "lat": 33.66946
+        }
+    },
+    {
+        "id": 5368361,
+        "name": "Los Angeles",
+        "state": "CA",
+        "country": "US",
+        "coord": {
+            "lon": -118.243683,
+            "lat": 34.052231
+        }
+    },
+    {
+        "id": 5391811,
+        "name": "San Diego",
+        "state": "CA",
+        "country": "US",
+        "coord": {
+            "lon": -117.157257,
+            "lat": 32.715328
+        }
+    },
+    {
+        "id": 5391959,
+        "name": "San Francisco",
+        "state": "CA",
+        "country": "US",
+        "coord": {
+            "lon": -122.419418,
+            "lat": 37.774929
+        }
+    },
+    {
+        "id": 5392171,
+        "name": "San Jose",
+        "state": "CA",
+        "country": "US",
+        "coord": {
+            "lon": -121.894958,
+            "lat": 37.33939
+        }
+    },
+    {
+        "id": 5419384,
+        "name": "Denver",
+        "state": "CO",
+        "country": "US",
+        "coord": {
+            "lon": -104.984703,
+            "lat": 39.739151
+        }
+    },
+    {
+        "id": 5506956,
+        "name": "Las Vegas",
+        "state": "NV",
+        "country": "US",
+        "coord": {
+            "lon": -115.137222,
+            "lat": 36.174969
+        }
+    },
+    {
+        "id": 5809844,
+        "name": "Seattle",
+        "state": "WA",
+        "country": "US",
+        "coord": {
+            "lon": -122.332069,
+            "lat": 47.606209
+        }
+    },
+    {
+        "id": 5856195,
+        "name": "Honolulu",
+        "state": "HI",
+        "country": "US",
+        "coord": {
+            "lon": -157.858337,
+            "lat": 21.30694
+        }
+    },
+    {
+        "id": 2759794,
+        "name": "Amsterdam",
+        "state": "",
+        "country": "NL",
+        "coord": {
+            "lon": 4.88969,
+            "lat": 52.374031
+        }
+    },
+    {
+        "id": 2643743,
+        "name": "London",
+        "state": "",
+        "country": "GB",
+        "coord": {
+            "lon": -0.12574,
+            "lat": 51.50853
+        }
+    },
+    {
+        "id": 2147714,
+        "name": "Sydney",
+        "state": "",
+        "country": "AU",
+        "coord": {
+            "lon": 151.207321,
+            "lat": -33.867851
+        }
+    },
+    {
+        "id": 2193732,
+        "name": "Auckland",
+        "state": "",
+        "country": "NZ",
+        "coord": {
+            "lon": 174.743042,
+            "lat": -36.85582
+        }
+    }
+]

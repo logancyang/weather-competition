@@ -66,7 +66,6 @@ def index():
 def get_city_score(city_id: int, period: str = 'now'):
     city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']
     q = BASE_URL + f"{city_id}?apikey={API_KEY}&details=true"
-    print(q)
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     weather = resp.json()[0]
     return _get_score_item(
@@ -84,7 +83,6 @@ def get_city_scores(city_id: int):
     timestamp = _get_utc_midnight_epoch(0)
     city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']
     q = BASE_URL + f"{city_id}/historical/24?apikey={API_KEY}&details=true"
-    print(q)
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     data = resp.json()
     return [

@@ -1,9 +1,9 @@
 """
 Scheduled job to populate DynamoDB, run daily after utc midnight
 To run:
-nohup python -m weather_competition.scheduled_job &
+nohup python -u -m weather_competition.scheduled_job &
 """
-
+import json
 import sys
 import requests
 
@@ -37,13 +37,14 @@ def query_api_insert_db(city_id):
     q = BASE_URL + f"{city_id}/historical/24?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     data = resp.json()
+    inserted_at = int(datetime.now().timestamp()*1000)
     for weather in data:
         datum = {
             "city_id": city_id,
             "city_name": city_name,
-            "day_start_at": day_start_at,
-            "inserted_at": int(datetime.now().timestamp()*1000),
-            "weather": weather
+            "day_start_at": str(day_start_at),
+            "inserted_at": str(inserted_at),
+            "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)
 

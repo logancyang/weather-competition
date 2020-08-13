@@ -1,5 +1,5 @@
 from datetime import datetime
-from weather_competition import __version__, app, score
+from weather_competition import __version__, score, utils
 
 
 ACCU_WEATHER_DATA = {
@@ -98,11 +98,11 @@ def test_version():
     assert __version__ == "0.1.0"
 
 
-def test__get_utc_midnight_epoch():
+def test_get_utc_midnight_epoch():
     dt = datetime(2020, 8, 10, 18, 30, 44, 493161)
-    assert app._get_utc_midnight_epoch(0, ref_dt=dt) == 1597017600
-    assert app._get_utc_midnight_epoch(1, ref_dt=dt) == 1596931200
-    assert app._get_utc_midnight_epoch(2, ref_dt=dt) == 1596844800
+    assert utils.get_utc_midnight_epoch(0, ref_dt=dt) == 1597017600
+    assert utils.get_utc_midnight_epoch(1, ref_dt=dt) == 1596931200
+    assert utils.get_utc_midnight_epoch(2, ref_dt=dt) == 1596844800
 
 
 def test_score_func():

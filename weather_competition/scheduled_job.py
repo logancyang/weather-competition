@@ -17,7 +17,7 @@ from settings import API_KEY, BASE_URL, AWS_ACCESS_KEY_ID, \
     AWS_SECRET_ACCESS_KEY, AWS_REGION
 
 
-TEST_CITY_IDS = ["349727", "351409"]
+TEST_CITY_IDS = ["349727", "351409", "347629"]
 
 sys.path.append(".")
 session = boto3.session.Session(
@@ -38,6 +38,7 @@ def query_api_insert_db(city_id):
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     data = resp.json()
     inserted_at = int(datetime.now().timestamp()*1000)
+    count = 0
     for weather in data:
         datum = {
             "city_id": city_id,
@@ -47,6 +48,9 @@ def query_api_insert_db(city_id):
             "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)
+        count += 1
+        print(f"\tInsert executed for {city_id}: entry # {count}")
+        sleep(0.5)
 
 
 # This runs daily at UTC00:02, ET20:02
@@ -56,7 +60,7 @@ def insert_weather_last24h():
     for city_id in TEST_CITY_IDS:
         try:
             query_api_insert_db(city_id)
-            sleep(5)
+            sleep(1)
             print(f"Scheduled db insert executed at {datetime.now()}")
         except Exception as e:
             print(f"Scheduled db insert failed for city {city_id}: {e}")

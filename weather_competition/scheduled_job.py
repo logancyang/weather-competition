@@ -37,9 +37,9 @@ def query_api_insert_db(city_id):
     q = BASE_URL + f"{city_id}/historical/24?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     data = resp.json()
-    inserted_at = int(datetime.now().timestamp()*1000)
     count = 0
     for weather in data:
+        inserted_at = int(datetime.now().timestamp()*1000)
         datum = {
             "city_id": city_id,
             "city_name": city_name,

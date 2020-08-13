@@ -40,11 +40,13 @@ def query_api_insert_db(city_id):
     count = 0
     for weather in data:
         inserted_at = int(datetime.now().timestamp()*1000)
+        epoch = weather['EpochTime']
         datum = {
             "city_id": city_id,
             "city_name": city_name,
             "day_start_at": str(day_start_at),
             "inserted_at": str(inserted_at),
+            "for_epoch": str(epoch),
             "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)

@@ -37,7 +37,6 @@ def query_api_insert_db(city_id):
     q = BASE_URL + f"{city_id}/historical/24?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     data = resp.json()
-    count = 0
     for weather in data:
         inserted_at = int(datetime.now().timestamp()*1000)
         epoch = weather['EpochTime']
@@ -50,9 +49,7 @@ def query_api_insert_db(city_id):
             "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)
-        count += 1
-        print(f"\tInsert executed for {city_id}: entry # {count}")
-        sleep(0.5)
+        sleep(0.3)
 
 
 # This runs daily at UTC00:02, ET20:02
@@ -61,9 +58,12 @@ def insert_weather_last24h():
     print("Scheduled job: executing...")
     for city_id in TEST_CITY_IDS:
         try:
+            t0 = datetime.now().timestamp()
             query_api_insert_db(city_id)
+            tdiff = datetime.now().timestamp() - t0
+            print(f"{datetime.now()}: Scheduled db insert executed for city "
+                  f"{city_id}, took {tdiff:.3f} seconds.")
             sleep(1)
-            print(f"Scheduled db insert executed at {datetime.now()}")
         except Exception as e:
             print(f"Scheduled db insert failed for city {city_id}: {e}")
 

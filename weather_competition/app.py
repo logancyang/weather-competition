@@ -1,3 +1,4 @@
+"""City Weather Competition API"""
 import json
 import requests
 from datetime import datetime, timedelta
@@ -45,8 +46,10 @@ def _get_query_string(city_id, time_opt, day_delta=0):
     data = CITY_ID_LOOKUP[city_id]
     lat = data['coord']['lat']
     lon = data['coord']['lon']
-    part = "minutely"
     if time_opt == 'today':
+        # This endpoint only has current and forecast, no historical
+        # Exclude all except current
+        part = "minutely,hourly,daily"
         return (f"?lat={lat}&lon={lon}&exclude={part}&appid={API_KEY}"
                 f"&units=imperial")
     if time_opt == 'past':
@@ -70,32 +73,44 @@ def index():
     return 'hello world'
 
 
-@app.get("/weatherscores")
-def get_weather_scores(city_id: int):
-    responses = {}
-    q_today = _get_query_string(city_id, 'today')
-    resp_today = requests.get(
-        BASE_URL + q_today,
+@app.get("/score")
+def get_city_score(
+    city_id: int, period: str = 'today', day_delta: int = 0
+):
+    q = _get_query_string(city_id, period, day_delta)
+    print(BASE_URL + q)
+    resp = requests.get(
+        BASE_URL + q,
         headers={"Content-Type": "application/json"}
     )
+    timestamp = _get_datetime(0)
+    resp_json = resp.json()
+    score = score_function(resp_json)
+    city_name = CITY_ID_LOOKUP[city_id]['name']
+    return {
+        'city_id': city_id,
+        'city_name': city_name,
+        'timestamp': timestamp,
+        'weather': resp_json,
+        'score': score
+    }
+
+
+# TODO: query should be in a daily scheduled job.
+# The job queries the past day's weather for all cities and log to
+# DynamoDB which the frontend consumes via this endpoint.
+# This endpoint should be re-written to call dynamodb
+# and the current code should be moved to that scheduled job.
+@app.get("/scores7d")
+def get_city_scores(city_id: int, history: bool = False):
+    responses = []
     # Per OpenWeatherAPI doc:
     # https://openweathermap.org/api/one-call-api#history
     # Past days queries take one day at a time
-    responses[_get_datetime(0)] = resp_today.json()
-    for i in range(1, 6):
-        q_past = _get_query_string(city_id, 'past', day_delta=i)
-        print(BASE_URL + q_past)
-        resp = requests.get(
-            BASE_URL + q_past,
-            headers={"Content-Type": "application/json"}
-        )
-        responses[_get_datetime(i)] = resp.json()
-
-    scores = _get_scores(responses)
-    return {
-        'weather': responses,
-        'score': scores
-    }
+    for i in range(1, 2):
+        response = get_city_score(city_id, period='past', day_delta=i)
+        responses.append(response)
+    return responses
 
 
 @app.get('/cities')

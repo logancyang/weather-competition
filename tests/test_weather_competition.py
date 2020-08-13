@@ -2,34 +2,108 @@ from datetime import datetime
 from weather_competition import __version__, app, score
 
 
+ACCU_WEATHER_DATA = {
+    "EpochTime": 1597326180,
+    "WeatherText": "Rain",
+    "WeatherIcon": 18,
+    "HasPrecipitation": True,
+    "PrecipitationType": "Rain",
+    "IsDayTime": True,
+    "Temperature": {
+        "Metric": {
+            "Value": 25.0,
+            "Unit": "C",
+            "UnitType": 17
+        },
+        "Imperial": {
+            "Value": 77.0,
+            "Unit": "F",
+            "UnitType": 18
+        }
+    },
+    "RealFeelTemperature": {
+        "Metric": {
+            "Value": 28.2,
+            "Unit": "C",
+            "UnitType": 17
+        },
+        "Imperial": {
+            "Value": 83.0,
+            "Unit": "F",
+            "UnitType": 18
+        }
+    },
+    "RelativeHumidity": 68,
+    "WindGust": {
+        "Speed": {
+            "Metric": {
+                "Value": 6.1,
+                "Unit": "km/h",
+                "UnitType": 7
+            },
+            "Imperial": {
+                "Value": 3.8,
+                "Unit": "mi/h",
+                "UnitType": 9
+            }
+        }
+    },
+    "UVIndex": 1,
+    "UVIndexText": "Low",
+    "Visibility": {
+        "Metric": {
+            "Value": 16.1,
+            "Unit": "km",
+            "UnitType": 6
+        },
+        "Imperial": {
+            "Value": 10.0,
+            "Unit": "mi",
+            "UnitType": 2
+        }
+    },
+    "CloudCover": 100,
+    "TemperatureSummary": {
+        "Past24HourRange": {
+            "Minimum": {
+                "Metric": {
+                    "Value": 22.2,
+                    "Unit": "C",
+                    "UnitType": 17
+                },
+                "Imperial": {
+                    "Value": 72.0,
+                    "Unit": "F",
+                    "UnitType": 18
+                }
+            },
+            "Maximum": {
+                "Metric": {
+                    "Value": 32.2,
+                    "Unit": "C",
+                    "UnitType": 17
+                },
+                "Imperial": {
+                    "Value": 90.0,
+                    "Unit": "F",
+                    "UnitType": 18
+                }
+            }
+        }
+    }
+}
+
+
 def test_version():
     assert __version__ == "0.1.0"
 
 
-def test__get_datetime():
+def test__get_utc_midnight_epoch():
     dt = datetime(2020, 8, 10, 18, 30, 44, 493161)
-    assert app._get_datetime(0, ref_dt=dt) == 1597017600
-    assert app._get_datetime(1, ref_dt=dt) == 1596931200
-    assert app._get_datetime(2, ref_dt=dt) == 1596844800
+    assert app._get_utc_midnight_epoch(0, ref_dt=dt) == 1597017600
+    assert app._get_utc_midnight_epoch(1, ref_dt=dt) == 1596931200
+    assert app._get_utc_midnight_epoch(2, ref_dt=dt) == 1596844800
 
 
-def test_score_function():
-    weather_data = {
-        "dt": 1597172400,
-        "temp": 87.06,
-        "feels_like": 88.56,
-        "pressure": 1011,
-        "humidity": 54,
-        "dew_point": 68.41,
-        "clouds": 1,
-        "visibility": 10000,
-        "wind_speed": 9.46,
-        "wind_deg": 226,
-        "weather": [
-            {"id": 500, "main": "Rain",
-             "description": "light rain", "icon": "10d"}
-        ],
-        "pop": 0.6,
-        "rain": {"1h": 0.19},
-    }
-    assert score.score_function(weather_data) == 65.44
+def test_score_func():
+    assert score.score_func(ACCU_WEATHER_DATA) == 62.0

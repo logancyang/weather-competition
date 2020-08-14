@@ -13,6 +13,9 @@ pytz = "^2020.1"
 python-dotenv = "^0.14.0"
 apscheduler = "^3.6.3"
 boto3 = "^1.14.42"
+google-api-python-client = "^1.10.0"
+google-auth-httplib2 = "^0.0.4"
+google-auth-oauthlib = "^0.4.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

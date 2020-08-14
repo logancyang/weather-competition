@@ -107,7 +107,7 @@ def send_daily_report():
             message_text = greeting + message_body
             msg = createMessage(sender, address, subject, message_text)
             sendMessage(service, sender, msg)
-            print(f"{datetime.now()}: Scheduled email sent for "
+            print(f"{datetime.now()}: Scheduled email successfully sent to "
                   f"recipient: {address}")
         except Exception as e:
             print(f"Scheduled email failed to send to recipient "

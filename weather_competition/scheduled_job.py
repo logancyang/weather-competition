@@ -16,8 +16,6 @@ from weather_competition.utils import get_utc_midnight_epoch, CITY_ID_LOOKUP,\
 from settings import API_KEY, BASE_URL
 
 
-TEST_CITY_IDS = ["349727", "351409", "347629"]
-
 sys.path.append(".")
 db, weather_table = create_db_session()
 
@@ -49,7 +47,7 @@ def query_api_insert_db(city_id):
 @sched.scheduled_job("cron", hour=0, minute=2, timezone="UTC")
 def insert_weather_last24h():
     print("Scheduled job: executing...")
-    for city_id in TEST_CITY_IDS:
+    for city_id in CITY_ID_LOOKUP.keys():
         try:
             t0 = datetime.now().timestamp()
             query_api_insert_db(city_id)

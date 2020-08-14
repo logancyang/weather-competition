@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from weather_competition.score import score_func
 from weather_competition.utils import CITY_ID_LOOKUP, get_utc_midnight_epoch,\
     create_db_session
-from settings import API_KEY, BASE_URL
+from settings import API_KEY, BASE_URL, DRAGON_API_KEY
 
 
 app = FastAPI()
@@ -55,7 +55,9 @@ def index():
 # Note: DO NOT expose this endpoint to app, free AccuWeather API only
 # allows 50 requests per day
 @app.get("/now")
-def get_city_score(city_id: int, period: str = 'now'):
+def get_city_score(city_id: int, apikey: str, period: str = 'now'):
+    if apikey != DRAGON_API_KEY:
+        return "403 Forbidden"
     city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']
     q = BASE_URL + f"{city_id}?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})
@@ -70,13 +72,17 @@ def get_city_score(city_id: int, period: str = 'now'):
 
 
 @app.get("/last24h")
-def get_city_scores(city_id: int, scores_only: bool = False):
+def get_city_scores(city_id: int, apikey: str, scores_only: bool = False):
+    if apikey != DRAGON_API_KEY:
+        return "403 Forbidden"
     data = _query_city(str(city_id), table=weather_table)
     return [_add_score(datum, scores_only) for datum in data]
 
 
 @app.get("/compete24h")
-def get_winner_24h(city_ids: str):
+def get_winner_24h(city_ids: str, apikey: str):
+    if apikey != DRAGON_API_KEY:
+        return "403 Forbidden"
     scores = []
     city_id_list = [id_str for id_str in city_ids.split(",")]
     for city_id in city_id_list:
@@ -91,5 +97,7 @@ def get_winner_24h(city_ids: str):
 
 
 @app.get('/cities')
-def get_cityids():
+def get_cityids(apikey: str):
+    if apikey != DRAGON_API_KEY:
+        return "403 Forbidden"
     return CITY_ID_LOOKUP

@@ -106,4 +106,4 @@ def test_get_utc_midnight_epoch():
 
 
 def test_score_func():
-    assert score.score_func(ACCU_WEATHER_DATA) == 62.0
+    assert score.score_func(ACCU_WEATHER_DATA) == 53.0

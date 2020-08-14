@@ -25,7 +25,7 @@ sched = BlockingScheduler()
 
 
 def query_api_insert_db(city_id):
-    day_start_at = get_utc_midnight_epoch(0)
+    day_start_at = get_utc_midnight_epoch(1)
     city_name = CITY_ID_LOOKUP[str(city_id)]["EnglishName"]
     q = BASE_URL + f"{city_id}/historical/24?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})

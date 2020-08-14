@@ -1,5 +1,8 @@
 """City Weather Competition API"""
+import json
 import requests
+
+from boto3.dynamodb.conditions import Key
 from fastapi import FastAPI
 
 from weather_competition.score import score_func
@@ -9,26 +12,39 @@ from settings import API_KEY, BASE_URL
 
 
 app = FastAPI()
+_, weather_table = create_db_session()
+DAY_INTERVAL = 86400 - 2
 
 
-"""
-Helpers
-"""
+"""Helpers"""
 
 
-def _get_score_item(city_id, city_name, day_start_at, weather):
-    return {
-        'city_id': city_id,
-        'city_name': city_name,
-        'day_start_at': day_start_at,
-        'weather': weather,
-        'score': score_func(weather)
-    }
+def _add_score(datum, scores_only=False):
+    datum['score'] = score_func(datum['weather'])
+    if scores_only:
+        return datum['for_epoch'], datum['score']
+    return datum
 
 
-"""
-Endpoints
-"""
+def _transform_weather_json(data):
+    for item in data:
+        item['weather'] = json.loads(item['weather'])
+    return data
+
+
+def _query_city(city_id, table=None):
+    if not table:
+        _, table = create_db_session()
+    # TODO: could be using the local midnight to query for_epoch range
+    day_start_at = get_utc_midnight_epoch(1)
+    resp = table.query(
+        KeyConditionExpression=Key('city_id').eq(city_id) &
+        Key('for_epoch').between(day_start_at, day_start_at+DAY_INTERVAL-2)
+    )
+    return _transform_weather_json(resp['Items'])
+
+
+"""Endpoints"""
 
 
 @app.get('/')
@@ -44,15 +60,32 @@ def get_city_score(city_id: int, period: str = 'now'):
     q = BASE_URL + f"{city_id}?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     weather = resp.json()[0]
-    return _get_score_item(
-        city_id, city_name, day_start_at=get_utc_midnight_epoch(0),
-        weather=weather)
+    datum = {
+        'city_id': city_id,
+        'city_name': city_name,
+        'day_start_at': get_utc_midnight_epoch(0),
+        'weather': weather
+    }
+    return _add_score(datum)
 
 
 @app.get("/last24h")
-def get_city_scores(city_id: int):
-    # day_start_at = get_utc_midnight_epoch(0)
-    return []
+def get_city_scores(city_id: int, scores_only: bool = False):
+    data = _query_city(str(city_id), table=weather_table)
+    return [_add_score(datum, scores_only) for datum in data]
+
+
+@app.get("/compete24h")
+def get_winner_24h(city_ids: str):
+    scores = []
+    city_id_list = [id_str for id_str in city_ids.split(",")]
+    for city_id in city_id_list:
+        city_24h_scores_tups = get_city_scores(int(city_id), scores_only=True)
+        city_24h_scores = [tup[1] for tup in city_24h_scores_tups]
+        avg_score = sum(city_24h_scores) / len(city_24h_scores)
+        city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']
+        scores.append((city_name, avg_score))
+    return sorted(scores, key=lambda tup: tup[1], reverse=True)
 
 
 @app.get('/cities')

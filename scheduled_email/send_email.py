@@ -1,6 +1,6 @@
 """Send an email message from the user's account.
 To run, in root directory:
-    python scheduled_email/send_email.py
+    nohup python -u scheduled_email/send_email.py &> emaillog.out &
 """
 import base64
 import pickle

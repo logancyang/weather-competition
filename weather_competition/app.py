@@ -81,6 +81,8 @@ def get_winner_24h(city_ids: str):
     city_id_list = [id_str for id_str in city_ids.split(",")]
     for city_id in city_id_list:
         city_24h_scores_tups = get_city_scores(int(city_id), scores_only=True)
+        if not city_24h_scores_tups:
+            continue
         city_24h_scores = [tup[1] for tup in city_24h_scores_tups]
         avg_score = sum(city_24h_scores) / len(city_24h_scores)
         city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']

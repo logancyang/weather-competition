@@ -55,7 +55,8 @@ def insert_weather_last24h():
             query_api_insert_db(city_id)
             tdiff = datetime.now().timestamp() - t0
             print(f"{datetime.now()}: Scheduled db insert executed for city "
-                  f"{city_id}, took {tdiff:.3f} seconds.")
+                  f"{city_id} in table {weather_table.name}, "
+                  f"took {tdiff:.3f} seconds.")
             sleep(1)
         except Exception as e:
             print(f"Scheduled db insert failed for city {city_id}: {e}")

@@ -7,26 +7,19 @@ import json
 import sys
 import requests
 
-import boto3
 from datetime import datetime
 from time import sleep
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from weather_competition.utils import get_utc_midnight_epoch, CITY_ID_LOOKUP
-from settings import API_KEY, BASE_URL, AWS_ACCESS_KEY_ID, \
-    AWS_SECRET_ACCESS_KEY, AWS_REGION
+from weather_competition.utils import get_utc_midnight_epoch, CITY_ID_LOOKUP,\
+    create_db_session
+from settings import API_KEY, BASE_URL
 
 
 TEST_CITY_IDS = ["349727", "351409", "347629"]
 
 sys.path.append(".")
-session = boto3.session.Session(
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    region_name=AWS_REGION
-)
-db = session.resource('dynamodb')
-weather_table = db.Table('dragonbot_weather')
+db, weather_table = create_db_session()
 
 sched = BlockingScheduler()
 
@@ -43,9 +36,9 @@ def query_api_insert_db(city_id):
         datum = {
             "city_id": city_id,
             "city_name": city_name,
-            "day_start_at": str(day_start_at),
-            "inserted_at": str(inserted_at),
-            "for_epoch": str(epoch),
+            "day_start_at": day_start_at,
+            "inserted_at": inserted_at,
+            "for_epoch": epoch,
             "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)

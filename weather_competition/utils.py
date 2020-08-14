@@ -1,6 +1,11 @@
 import json
+
+import boto3
+
 from datetime import datetime, timedelta
 from pytz import UTC
+
+from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 
 
 def load_city_data():
@@ -25,3 +30,14 @@ def get_utc_midnight_epoch(day_delta, ref_dt=None):
         hour=0, minute=0, second=0, microsecond=0, tzinfo=UTC
     )
     return int(dt_ago_midnight.timestamp())
+
+
+def create_db_session():
+    session = boto3.session.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        region_name=AWS_REGION
+    )
+    db = session.resource('dynamodb')
+    weather_table = db.Table('dragonbot_weather_v1')
+    return db, weather_table

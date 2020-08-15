@@ -97,7 +97,7 @@ def query_last24h():
 
 
 # This runs daily at ET06:00
-@sched.scheduled_job("cron", hour=6, minute=0, timezone="America/New_York")
+@sched.scheduled_job("cron", hour=7, minute=0, timezone="America/New_York")
 def send_daily_report():
     print("Query for daily report...")
     sender, tos, subject, message_body = query_last24h()

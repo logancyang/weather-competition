@@ -72,30 +72,35 @@ def createMessage(sender, to, subject, message_text):
     return {'raw': raw_message.decode()}
 
 
-url = settings.DRAGONBOT_URL
-resp = requests.get(
-    url, headers={"Content-Type": "application/json"}
-)
-data = resp.json()
+def query_last24h():
+    url = settings.DRAGONBOT_URL
+    resp = requests.get(
+        url, headers={"Content-Type": "application/json"}
+    )
+    data = resp.json()
 
-sender = "lolo.yang86@gmail.com"
-tos = {
-    "logan1934@gmail.com": "Logan",
-    "yuliaa001@gmail.com": "Evelyn"
-}
-subject = "Daily Weather Score Report by DragonBot🐲"
-yesterday = datetime.today() - timedelta(days=1)
-message_body = (
-    f"Weather competition scores for yesterday "
-    f"{yesterday.strftime('%m/%d/%Y')}:\n\n"
-)
-for city, score in data:
-    message_body += f"\t{city}: {score:.2f}\n"
+    sender = "lolo.yang86@gmail.com"
+    tos = {
+        "logan1934@gmail.com": "Logan",
+        "yuliaa001@gmail.com": "Evelyn"
+    }
+    yesterday = datetime.today() - timedelta(days=1)
+    message_body = (
+        f"Weather competition scores for yesterday "
+        f"{yesterday.strftime('%m/%d/%Y')}:\n\n"
+    )
+    subject = "Daily Weather Score Report for yesterday by DragonBot🐲"
+
+    for city, score in data:
+        message_body += f"\t{city}: {score:.2f}\n"
+    return sender, tos, subject, message_body
 
 
 # This runs daily at ET06:00
 @sched.scheduled_job("cron", hour=6, minute=0, timezone="America/New_York")
 def send_daily_report():
+    print("Query for daily report...")
+    sender, tos, subject, message_body = query_last24h()
     print("Scheduled email: sending...")
     with open(parent/'token.pickle', 'rb') as token:
         creds = pickle.load(token)

@@ -116,22 +116,38 @@ def score_func(weather):
     """weather passed in is assumed to be hourly"""
     temp = weather['RealFeelTemperature']['Imperial']['Value']
     temp_penalty = 0
+    descriptions = {
+        'hot': False,
+        'cold': False,
+        'humid': False,
+        'dry': False,
+        'cloudy': False,
+        'rainy': False
+    }
     if temp < T_LOWER:
         temp_penalty = T_LOWER - temp
+        descriptions['cold'] = True
     elif temp > T_UPPER:
         temp_penalty = temp - T_UPPER
+        descriptions['hot'] = True
     humid = weather['RelativeHumidity']
     humid_penalty = 0
     if humid < H_LOWER:
         humid_penalty = (H_LOWER - humid) * HUMID_PENALTY_MULT
+        descriptions['dry'] = True
     elif humid > H_UPPER:
         humid_penalty = (humid - H_UPPER) * HUMID_PENALTY_MULT
-    cloud_penalty = 5 if weather['CloudCover'] >= 90 else 0
-    condition_penalty = PRECIP_PENALTY if weather['HasPrecipitation'] else 0
+        descriptions['humid'] = True
+
+    cloud_penalty = 0
+    if weather['CloudCover'] >= 90:
+        cloud_penalty = 5
+        descriptions['cloudy'] = True
+
+    precip_penalty = 0
+    if weather['HasPrecipitation']:
+        precip_penalty = PRECIP_PENALTY
+        descriptions['rainy'] = True
+
     return 100 - temp_penalty - humid_penalty -\
-        cloud_penalty - condition_penalty
-
-
-def avg_score(weather_list):
-    scores = [score_func(weather) for weather in weather_list]
-    return sum(scores) / len(weather_list)
+        cloud_penalty - precip_penalty, descriptions

@@ -20,9 +20,9 @@ DAY_INTERVAL = 86400 - 2
 
 
 def _add_score(datum, scores_only=False):
-    datum['score'] = score_func(datum['weather'])
+    datum['score'], datum['desc'] = score_func(datum['weather'])
     if scores_only:
-        return datum['for_epoch'], datum['score']
+        return datum['for_epoch'], datum['score'], datum['desc']
     return datum
 
 

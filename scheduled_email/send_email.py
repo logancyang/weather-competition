@@ -78,8 +78,16 @@ def construct_message_body(data):
         f"Weather score ranking for yesterday "
         f"{yesterday.strftime('%m/%d/%Y')}:\n\n"
     )
-    for ind, (city, score) in enumerate(data):
+    for ind, (city, score, *description) in enumerate(data):
         message_body += f"\t{ind+1}. {city}: {score:.2f}\n"
+        if not description:
+            continue
+        desc = "\t\t"
+        for prop, value in description.items():
+            if value:
+                desc += prop + ', '
+        desc += "\n"
+        message_body += desc
     return message_body
 
 

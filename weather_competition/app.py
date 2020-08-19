@@ -5,7 +5,7 @@ import requests
 from boto3.dynamodb.conditions import Key
 from fastapi import FastAPI
 
-from weather_competition.score import score_func
+from weather_competition.score import score_func, summarize_desc
 from weather_competition.utils import CITY_ID_LOOKUP, get_utc_midnight_epoch,\
     create_db_session
 from settings import API_KEY, BASE_URL, DRAGON_API_KEY
@@ -86,15 +86,16 @@ def get_winner_24h(city_ids: str, apikey: str):
     scores = []
     city_id_list = [id_str for id_str in city_ids.split(",")]
     for city_id in city_id_list:
-        city_24h_scores_tups = get_city_scores(
+        city_24h_tups = get_city_scores(
             int(city_id), apikey, scores_only=True
         )
-        if not city_24h_scores_tups:
+        if not city_24h_tups:
             continue
-        city_24h_scores = [tup[1] for tup in city_24h_scores_tups]
+        city_24h_scores = [tup[1] for tup in city_24h_tups]
         avg_score = sum(city_24h_scores) / len(city_24h_scores)
+        summary_24h_desc = summarize_desc(city_24h_tups)
         city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']
-        scores.append((city_name, avg_score))
+        scores.append((city_name, avg_score, summary_24h_desc))
     return sorted(scores, key=lambda tup: tup[1], reverse=True)
 
 

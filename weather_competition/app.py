@@ -1,6 +1,7 @@
 """City Weather Competition API"""
 import json
 import requests
+from functools import partial
 
 from boto3.dynamodb.conditions import Key
 from fastapi import FastAPI
@@ -19,11 +20,11 @@ DAY_INTERVAL = 86400 - 2
 """Helpers"""
 
 
-def _add_score(datum, scores_only=False):
+def _add_score(datum, details=False):
     datum['score'], datum['desc'] = score_func(datum['weather'])
-    if scores_only:
-        return datum['for_epoch'], datum['score'], datum['desc']
-    return datum
+    if details:
+        return datum
+    return datum['for_epoch'], datum['score'], datum['desc']
 
 
 def _transform_weather_json(data):
@@ -32,16 +33,31 @@ def _transform_weather_json(data):
     return data
 
 
-def _query_city(city_id, table=None):
+def _query_city(city_id, num_past_days, table=None):
     if not table:
         _, table = create_db_session()
     # TODO: could be using the local midnight to query for_epoch range
-    day_start_at = get_utc_midnight_epoch(1)
+    day_start_at = get_utc_midnight_epoch(num_past_days)
     resp = table.query(
         KeyConditionExpression=Key('city_id').eq(city_id) &
-        Key('for_epoch').between(day_start_at, day_start_at+DAY_INTERVAL-2)
+        Key('for_epoch').between(
+            day_start_at, day_start_at + num_past_days * DAY_INTERVAL - 2
+        )
     )
     return _transform_weather_json(resp['Items'])
+
+
+def _get_city_scores(
+    num_past_days: int, city_id: int, apikey: str, details: bool = False
+):
+    if apikey != DRAGON_API_KEY:
+        return "403 Forbidden"
+    data = _query_city(str(city_id), num_past_days, table=weather_table)
+    return [_add_score(datum, details) for datum in data]
+
+
+_get_city_scores_24h = partial(_get_city_scores, 1)
+_get_city_scores_7d = partial(_get_city_scores, 8)
 
 
 """Endpoints"""
@@ -72,11 +88,13 @@ def get_city_score(city_id: int, apikey: str, period: str = 'now'):
 
 
 @app.get("/last24h")
-def get_city_scores(city_id: int, apikey: str, scores_only: bool = False):
-    if apikey != DRAGON_API_KEY:
-        return "403 Forbidden"
-    data = _query_city(str(city_id), table=weather_table)
-    return [_add_score(datum, scores_only) for datum in data]
+def get_scores_24h(city_id: int, apikey: str, details: bool = False):
+    return _get_city_scores_24h(city_id, apikey, details)
+
+
+@app.get("/last7d")
+def get_scores_7d(city_id: int, apikey: str, details: bool = False):
+    return _get_city_scores_7d(city_id, apikey, details)
 
 
 @app.get("/compete24h")
@@ -86,9 +104,7 @@ def get_winner_24h(city_ids: str, apikey: str):
     scores = []
     city_id_list = [id_str for id_str in city_ids.split(",")]
     for city_id in city_id_list:
-        city_24h_tups = get_city_scores(
-            int(city_id), apikey, scores_only=True
-        )
+        city_24h_tups = _get_city_scores_24h(int(city_id), apikey)
         if not city_24h_tups:
             continue
         city_24h_scores = [tup[1] for tup in city_24h_tups]

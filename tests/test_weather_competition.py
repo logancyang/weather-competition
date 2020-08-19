@@ -25,6 +25,16 @@ def test_score_func():
     assert desc['rainy']
 
 
+def test__summarize():
+    city_descs = [tup[2] for tup in SCORES_LIST]
+    assert score._summarize(city_descs, 'hot') == (6, True)
+    assert score._summarize(city_descs, 'cold') == (0, False)
+    assert score._summarize(city_descs, 'humid') == (23, True)
+    assert score._summarize(city_descs, 'dry') == (0, False)
+    assert score._summarize(city_descs, 'cloudy') == (10, True)
+    assert score._summarize(city_descs, 'rainy') == (1, False)
+
+
 def test_summarize_desc():
     expected = {
         'hot': True,

@@ -82,11 +82,11 @@ def construct_message_body(data):
         message_body += f"\t{ind+1}. {city}: {score:.2f}\n"
         if not description:
             continue
-        desc = "\t\t"
-        for prop, value in description.items():
+        desc_list = []
+        for prop, value in description[0].items():
             if value:
-                desc += prop + ', '
-        desc += "\n"
+                desc_list.append(prop)
+        desc = "\t\t" + ", ".join(desc_list) + "\n"
         message_body += desc
     return message_body
 
@@ -132,5 +132,7 @@ def send_daily_report():
                   f"{address}: {e}")
 
 
+# sender, tos, subject, message_body = query_build_msg_last24h()
+# print(message_body)
 print("Scheduled job: started...")
 sched.start()

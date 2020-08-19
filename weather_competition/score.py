@@ -153,7 +153,7 @@ def score_func(weather):
         cloud_penalty - precip_penalty, descriptions
 
 
-def _summarize(desc_list, prop, threshold=2):
+def _summarize(desc_list, prop, threshold=5):
     """Returns the count of properties such as hot, cold, dry, humid,
     cloudy, rainy, and whether they exceed a threshold
     """
@@ -180,5 +180,7 @@ def summarize_desc(city_scores):
     num_cloudy, summary['cloudy'] = _summarize(
         city_descs, 'cloudy', threshold=3
     )
-    num_rainy, summary['rainy'] = _summarize(city_descs, 'rainy')
+    num_rainy, summary['rainy'] = _summarize(
+        city_descs, 'rainy', threshold=2
+    )
     return summary

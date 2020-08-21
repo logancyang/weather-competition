@@ -84,8 +84,12 @@ def construct_message_body(data):
             continue
         desc_list = []
         for prop, value in description[0].items():
-            if value:
+            if value is True:
                 desc_list.append(prop)
+        max_temp = description[0].get('max_temp')
+        desc_list.append(f"max temperature: {max_temp:.2f}")
+        max_humid = description[0].get('max_humid')
+        desc_list.append(f"max humidity: {max_humid:.2f}")
         desc = "\t\t" + ", ".join(desc_list) + "\n"
         message_body += desc
     return message_body

@@ -108,29 +108,34 @@ T_UPPER = 79
 T_LOWER = 62
 H_UPPER = 50
 H_LOWER = 35
-HUMID_PENALTY_MULT = 1
-PRECIP_PENALTY = 20
+HUMID_PENALTY_MULT = 0.8
+CLOUD_PENALTY = 10
+PRECIP_PENALTY = 50
 
 
 def score_func(weather):
     """weather passed in is assumed to be hourly"""
     temp = weather['RealFeelTemperature']['Imperial']['Value']
-    temp_penalty = 0
+    humid = weather['RelativeHumidity']
     descriptions = {
         'hot': False,
         'cold': False,
         'humid': False,
         'dry': False,
         'cloudy': False,
-        'rainy': False
+        'rainy': False,
+        'temperature': temp,
+        'humidity': humid
     }
+
+    temp_penalty = 0
     if temp < T_LOWER:
         temp_penalty = T_LOWER - temp
         descriptions['cold'] = True
     elif temp > T_UPPER:
         temp_penalty = temp - T_UPPER
         descriptions['hot'] = True
-    humid = weather['RelativeHumidity']
+
     humid_penalty = 0
     if humid < H_LOWER:
         humid_penalty = (H_LOWER - humid) * HUMID_PENALTY_MULT
@@ -141,7 +146,7 @@ def score_func(weather):
 
     cloud_penalty = 0
     if weather['CloudCover'] >= 90:
-        cloud_penalty = 5
+        cloud_penalty = CLOUD_PENALTY
         descriptions['cloudy'] = True
 
     precip_penalty = 0
@@ -161,26 +166,29 @@ def _summarize(desc_list, prop, threshold=5):
     return count, count > threshold
 
 
+def _summary_stats(desc_list, prop):
+    values = [desc[prop] for desc in desc_list]
+    avg = sum(values) / len(values)
+    return max(values), avg, min(values)
+
+
 def summarize_desc(city_scores):
     """Takes in a list of score tuples (with description dictionary)
     and returns a summary description"""
     city_descs = [tup[2] for tup in city_scores]
-    summary = {
-        'hot': False,
-        'cold': False,
-        'humid': False,
-        'dry': False,
-        'cloudy': False,
-        'rainy': False
-    }
+    summary = {}
     num_hot, summary['hot'] = _summarize(city_descs, 'hot')
     num_cold, summary['cold'] = _summarize(city_descs, 'cold')
     num_humid, summary['humid'] = _summarize(city_descs, 'humid')
-    num_dry, summary['dry'] = _summarize(city_descs, 'dry')
+    num_dry, summary['dry'] = _summarize(city_descs, 'dry', threshold=6)
     num_cloudy, summary['cloudy'] = _summarize(
         city_descs, 'cloudy', threshold=3
     )
     num_rainy, summary['rainy'] = _summarize(
         city_descs, 'rainy', threshold=2
     )
+    summary['max_temp'], summary['avg_temp'], summary['min_temp'] =\
+        _summary_stats(city_descs, 'temperature')
+    summary['max_humid'], summary['avg_humid'], summary['min_humid'] =\
+        _summary_stats(city_descs, 'humidity')
     return summary

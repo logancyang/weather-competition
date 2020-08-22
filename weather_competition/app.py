@@ -36,7 +36,6 @@ def _transform_weather_json(data):
 def _query_city(city_id, num_past_days, table=None):
     if not table:
         _, table = create_db_session()
-    # TODO: could be using the local midnight to query for_epoch range
     timezone = CITY_ID_LOOKUP[city_id]['TimeZone']['Name']
     day_start_at, _ = get_midnight_epoch(num_past_days, timezone)
     resp = table.query(

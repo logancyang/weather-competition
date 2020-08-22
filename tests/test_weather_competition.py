@@ -9,11 +9,29 @@ def test_version():
     assert __version__ == "0.1.0"
 
 
-def test_get_utc_midnight_epoch():
+def test_get_midnight_epoch():
     dt = datetime(2020, 8, 10, 18, 30, 44, 493161)
-    assert utils.get_utc_midnight_epoch(0, ref_dt=dt) == 1597017600
-    assert utils.get_utc_midnight_epoch(1, ref_dt=dt) == 1596931200
-    assert utils.get_utc_midnight_epoch(2, ref_dt=dt) == 1596844800
+    # timezone -> UTC
+    timezone_str = 'UTC'
+    assert utils.get_midnight_epoch(0, timezone_str, ref_dt=dt) == \
+        (1597017600, '2020-08-10 00:00:00+00:00')
+    assert utils.get_midnight_epoch(1, timezone_str, ref_dt=dt) == \
+        (1596931200, '2020-08-09 00:00:00+00:00')
+    assert utils.get_midnight_epoch(2, timezone_str, ref_dt=dt) == \
+        (1596844800, '2020-08-08 00:00:00+00:00')
+    # timezone -> timezone codes
+    assert utils.get_midnight_epoch(
+        1, 'America/Los_Angeles', ref_dt=dt
+    ) == (1596956400, '2020-08-09 00:00:00-07:00')
+    assert utils.get_midnight_epoch(
+        1, 'Asia/Shanghai', ref_dt=dt
+    ) == (1596902400, '2020-08-09 00:00:00+08:00')
+    assert utils.get_midnight_epoch(
+        1, 'America/New_York', ref_dt=dt
+    ) == (1596945600, '2020-08-09 00:00:00-04:00')
+    assert utils.get_midnight_epoch(
+        1, 'Pacific/Honolulu', ref_dt=dt
+    ) == (1596967200, '2020-08-09 00:00:00-10:00')
 
 
 def test_score_func():

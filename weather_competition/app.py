@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Key
 from fastapi import FastAPI
 
 from weather_competition.score import score_func, summarize_desc
-from weather_competition.utils import CITY_ID_LOOKUP, get_utc_midnight_epoch,\
+from weather_competition.utils import CITY_ID_LOOKUP, get_midnight_epoch,\
     create_db_session
 from settings import API_KEY, BASE_URL, DRAGON_API_KEY
 
@@ -37,7 +37,8 @@ def _query_city(city_id, num_past_days, table=None):
     if not table:
         _, table = create_db_session()
     # TODO: could be using the local midnight to query for_epoch range
-    day_start_at = get_utc_midnight_epoch(num_past_days)
+    timezone = CITY_ID_LOOKUP[city_id]['TimeZone']['Name']
+    day_start_at, _ = get_midnight_epoch(num_past_days, timezone)
     resp = table.query(
         KeyConditionExpression=Key('city_id').eq(city_id) &
         Key('for_epoch').between(
@@ -75,13 +76,15 @@ def get_city_score(city_id: int, apikey: str, period: str = 'now'):
     if apikey != DRAGON_API_KEY:
         return "403 Forbidden"
     city_name = CITY_ID_LOOKUP[str(city_id)]['EnglishName']
+    timezone_str = CITY_ID_LOOKUP[str(city_id)]['TimeZone']['Name']
     q = BASE_URL + f"{city_id}?apikey={API_KEY}&details=true"
     resp = requests.get(q, headers={"Content-Type": "application/json"})
     weather = resp.json()[0]
+    local_midnight_epoch, _ = get_midnight_epoch(0, timezone_str)
     datum = {
         'city_id': city_id,
         'city_name': city_name,
-        'day_start_at': get_utc_midnight_epoch(0),
+        'day_start_at': local_midnight_epoch,
         'weather': weather
     }
     return _add_score(datum)

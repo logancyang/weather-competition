@@ -1,10 +1,8 @@
 import json
-
+import pytz
 import boto3
 
 from datetime import datetime, timedelta
-from pytz import UTC
-
 from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 
 
@@ -17,19 +15,20 @@ def load_city_data():
 CITY_ID_LOOKUP = load_city_data()
 
 
-def get_utc_midnight_epoch(day_delta, ref_dt=None):
+def get_midnight_epoch(day_delta, timezone_str, ref_dt=None):
     """
-    Returns midnight time of a day in epoch second in UTC
+    Returns midnight time of a day in epoch second in name-specified timezone.
     day_delta is an integer from 0 to 6. 0 means today, 1 means yesterday, etc.
     """
     if not ref_dt:
         ref_dt = datetime.now()
     dt_ago = ref_dt - timedelta(days=day_delta)
-    # UTC midnight
-    dt_ago_midnight = dt_ago.replace(
-        hour=0, minute=0, second=0, microsecond=0, tzinfo=UTC
+    tz = pytz.timezone(timezone_str)
+    dt_ago_local = tz.localize(dt_ago)
+    dt_ago_local_midnight = dt_ago_local.replace(
+        hour=0, minute=0, second=0, microsecond=0
     )
-    return int(dt_ago_midnight.timestamp())
+    return int(dt_ago_local_midnight.timestamp()), str(dt_ago_local_midnight)
 
 
 def create_db_session():

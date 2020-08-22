@@ -15,6 +15,11 @@ def load_city_data():
 CITY_ID_LOOKUP = load_city_data()
 
 
+def epoch2datestr(epoch, timezone_str):
+    tz = pytz.timezone(timezone_str)
+    return str(datetime.fromtimestamp(epoch, tz))
+
+
 def get_midnight_epoch(day_delta, timezone_str, ref_dt=None):
     """
     Returns midnight time of a day in epoch second in name-specified timezone.

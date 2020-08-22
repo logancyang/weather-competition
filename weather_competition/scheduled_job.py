@@ -11,8 +11,8 @@ from datetime import datetime
 from time import sleep
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from weather_competition.utils import get_midnight_epoch, CITY_ID_LOOKUP,\
-    create_db_session
+from weather_competition.utils import get_midnight_epoch, epoch2datestr,\
+    create_db_session, CITY_ID_LOOKUP
 from settings import API_KEY, BASE_URL
 
 
@@ -35,9 +35,9 @@ def query_api_insert_db(city_id):
         datum = {
             "city_id": city_id,
             "city_name": city_name,
-            "day_start_at": local_midnight_epoch,
             "inserted_at": inserted_at,
             "for_epoch": epoch,
+            "for_datestr": epoch2datestr(epoch),
             "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)

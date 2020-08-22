@@ -9,6 +9,16 @@ def test_version():
     assert __version__ == "0.1.0"
 
 
+def test_epoch2datestr():
+    assert utils.epoch2datestr(1596844800, 'UTC') == '2020-08-08 00:00:00+00:00'
+    assert utils.epoch2datestr(1596902400, 'Asia/Shanghai') == \
+        '2020-08-09 00:00:00+08:00'
+    assert utils.epoch2datestr(1596967200, 'Pacific/Honolulu') == \
+        '2020-08-09 00:00:00-10:00'
+    assert utils.epoch2datestr(1596945600, 'America/New_York') == \
+        '2020-08-09 00:00:00-04:00'
+
+
 def test_get_midnight_epoch():
     dt = datetime(2020, 8, 10, 18, 30, 44, 493161)
     # timezone -> UTC

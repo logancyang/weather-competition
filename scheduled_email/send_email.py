@@ -20,11 +20,17 @@ path = Path(os.path.abspath(__file__))
 parent = path.parent
 root = parent.parent
 
+
 # Trick to import parent folder (root) module
 spec = importlib.util.spec_from_file_location(
     "settings.py", root/"settings.py")
 settings = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(settings)
+
+
+PROD_API_URL = settings.DRAGONBOT_URL
+TEST_API_URL = settings.TEST_URL
+
 
 sched = BlockingScheduler()
 
@@ -87,16 +93,15 @@ def construct_message_body(data):
             if value is True:
                 desc_list.append(prop)
         max_temp = description[0].get('max_temp')
-        desc_list.append(f"max temperature: {max_temp:.2f}")
-        max_humid = description[0].get('max_humid')
-        desc_list.append(f"max humidity: {max_humid:.2f}")
+        desc_list.append(f"max real feel temperature: {max_temp:.2f}")
+        avg_humid = description[0].get('avg_humid')
+        desc_list.append(f"average humidity: {avg_humid:.2f}")
         desc = "\t\t" + ", ".join(desc_list) + "\n\n"
         message_body += desc
     return message_body
 
 
-def query_build_msg_last24h():
-    url = settings.DRAGONBOT_URL
+def query_build_msg_last24h(url):
     resp = requests.get(
         url, headers={"Content-Type": "application/json"}
     )
@@ -116,7 +121,7 @@ def query_build_msg_last24h():
 @sched.scheduled_job("cron", hour=7, minute=0, timezone="America/New_York")
 def send_daily_report():
     print("Query for daily report...")
-    sender, tos, subject, message_body = query_build_msg_last24h()
+    sender, tos, subject, message_body = query_build_msg_last24h(PROD_API_URL)
     print(f"Message constructed:\n\n{message_body}\n\n")
     print("Scheduled email: sending...")
     with open(parent/'token.pickle', 'rb') as token:
@@ -136,7 +141,7 @@ def send_daily_report():
                   f"{address}: {e}")
 
 
-# sender, tos, subject, message_body = query_build_msg_last24h()
+# sender, tos, subject, message_body = query_build_msg_last24h(TEST_API_URL)
 # print(message_body)
 print("Scheduled job: started...")
 sched.start()

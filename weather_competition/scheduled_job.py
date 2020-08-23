@@ -37,7 +37,7 @@ def query_api_insert_db(city_id):
             "city_name": city_name,
             "inserted_at": inserted_at,
             "for_epoch": epoch,
-            "for_datestr": epoch2datestr(epoch),
+            "for_datestr": epoch2datestr(epoch, timezone_str),
             "weather": json.dumps(weather)
         }
         weather_table.put_item(Item=datum)

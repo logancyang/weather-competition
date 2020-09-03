@@ -10,7 +10,8 @@ def test_version():
 
 
 def test_epoch2datestr():
-    assert utils.epoch2datestr(1596844800, 'UTC') == '2020-08-08 00:00:00+00:00'
+    assert utils.epoch2datestr(1596844800, 'UTC') == \
+        '2020-08-08 00:00:00+00:00'
     assert utils.epoch2datestr(1596902400, 'Asia/Shanghai') == \
         '2020-08-09 00:00:00+08:00'
     assert utils.epoch2datestr(1596967200, 'Pacific/Honolulu') == \

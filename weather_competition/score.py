@@ -101,8 +101,8 @@ V0 scoring formula:
 
 T: RealFeelTemperature. [range]: 60-79
 H: RelativeHumidity. [range]: 35-60
-I(CloudCover>=90): whether CloudCover >= 90, if yes, -5
-I(HasPrecipitation): whether there is any precipitation, if yes, -20
+I(CloudCover>=90): whether CloudCover >= 90
+I(HasPrecipitation): whether there is any precipitation
 """
 
 

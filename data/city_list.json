@@ -999,5 +999,75 @@
             "MinuteCast",
             "Radar"
         ]
+    },
+    {
+        "Version": 1,
+        "Key": "326857",
+        "Type": "City",
+        "Rank": 55,
+        "LocalizedName": "Fayetteville",
+        "EnglishName": "Fayetteville",
+        "PrimaryPostalCode": "72701",
+        "Region": {
+            "ID": "NAM",
+            "LocalizedName": "North America",
+            "EnglishName": "North America"
+        },
+        "Country": {
+            "ID": "US",
+            "LocalizedName": "United States",
+            "EnglishName": "United States"
+        },
+        "AdministrativeArea": {
+            "ID": "AR",
+            "LocalizedName": "Arkansas",
+            "EnglishName": "Arkansas",
+            "Level": 1,
+            "LocalizedType": "State",
+            "EnglishType": "State",
+            "CountryID": "US"
+        },
+        "TimeZone": {
+            "Code": "CST",
+            "Name": "America/Chicago",
+            "GmtOffset": -6,
+            "IsDaylightSaving": false,
+            "NextOffsetChange": "2022-03-13T08:00:00Z"
+        },
+        "GeoPosition": {
+            "Latitude": 36.063,
+            "Longitude": -94.157,
+            "Elevation": {
+                "Metric": {
+                    "Value": 427,
+                    "Unit": "m",
+                    "UnitType": 5
+                },
+                "Imperial": {
+                    "Value": 1400,
+                    "Unit": "ft",
+                    "UnitType": 0
+                }
+            }
+        },
+        "IsAlias": false,
+        "SupplementalAdminAreas": [
+            {
+                "Level": 2,
+                "LocalizedName": "Washington",
+                "EnglishName": "Washington"
+            }
+        ],
+        "DataSets": [
+            "AirQualityCurrentConditions",
+            "AirQualityForecasts",
+            "Alerts",
+            "DailyAirQualityForecast",
+            "DailyPollenForecast",
+            "ForecastConfidence",
+            "FutureRadar",
+            "MinuteCast",
+            "Radar"
+        ]
     }
 ]

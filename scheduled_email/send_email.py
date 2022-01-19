@@ -27,7 +27,7 @@ spec = importlib.util.spec_from_file_location(
 settings = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(settings)
 
-
+# NOTE: Cities in the email are hardcoded in this url
 PROD_API_URL = settings.DRAGONBOT_URL
 TEST_API_URL = settings.TEST_URL
 
@@ -117,7 +117,6 @@ def query_build_msg_last24h(url):
     return sender, tos, subject, message_body
 
 
-# This runs daily at ET06:00
 @sched.scheduled_job("cron", hour=7, minute=0, timezone="America/New_York")
 def send_daily_report():
     print("Query for daily report...")

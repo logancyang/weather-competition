@@ -12,7 +12,14 @@ def load_city_data():
     return {city['Key']: city for city in city_list}
 
 
+def load_city_name2id_lookup():
+    with open('./data/city_list.json') as f:
+        city_list = json.load(f)
+    return {city['EnglishName']: city['Key'] for city in city_list}
+
+
 CITY_ID_LOOKUP = load_city_data()
+CITY_NAME2ID_LOOKUP = load_city_name2id_lookup()
 
 
 def epoch2datestr(epoch, timezone_str):

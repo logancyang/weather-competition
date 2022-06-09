@@ -15,6 +15,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apiclient import errors
 from googleapiclient.discovery import build
 
+from weather_competition.utils import CITY_NAME2ID_LOOKUP
+
 
 path = Path(os.path.abspath(__file__))
 parent = path.parent
@@ -27,15 +29,50 @@ spec = importlib.util.spec_from_file_location(
 settings = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(settings)
 
-# NOTE: Cities in the email are hardcoded in this url
-PROD_API_URL = settings.DRAGONBOT_URL
+# NOTE: Cities in the email needs to be appended to this url
+CITY_NAMES = [
+    "New York", "Seattle", "Dallas", "San Diego", "San Francisco",
+    "Denver", "Tokyo"
+]
+PROD_API_URL_PREFIX = settings.DRAGONBOT_URL
 TEST_API_URL = settings.TEST_URL
 
 
 sched = BlockingScheduler()
 
 
-def sendMessage(service, user_id, message):
+@sched.scheduled_job("cron", hour=7, minute=0, timezone="America/New_York")
+def send_daily_report():
+    print("Query for daily report...")
+    prod_api_url = _gen_api_url(PROD_API_URL_PREFIX, CITY_NAMES)
+    sender, tos, subject, message_body = _query_build_msg_last24h(prod_api_url)
+    print(f"Message constructed:\n\n{message_body}\n\n")
+    print("Scheduled email: sending...")
+    with open(parent/'token.pickle', 'rb') as token:
+        creds = pickle.load(token)
+    service = build('gmail', 'v1', credentials=creds)
+
+    for address, user in tos.items():
+        try:
+            greeting = f"Hi {user},\n\n"
+            message_text = greeting + message_body
+            msg = _createMessage(sender, address, subject, message_text)
+            _sendMessage(service, sender, msg)
+            print(f"{datetime.now()}: Scheduled email successfully sent to "
+                  f"recipient: {address}")
+        except Exception as e:
+            print(f"Scheduled email failed to send to recipient "
+                  f"{address}: {e}")
+
+
+def _gen_api_url(url_prefix, city_names):
+    city_ids_str = ",".join(
+        [CITY_NAME2ID_LOOKUP[city_name] for city_name in city_names]
+    )
+    return url_prefix + city_ids_str
+
+
+def _sendMessage(service, user_id, message):
     """Send an email message.
 
     Args:
@@ -58,7 +95,7 @@ def sendMessage(service, user_id, message):
         print("An error occurred: %s" % error)
 
 
-def createMessage(sender, to, subject, message_text):
+def _createMessage(sender, to, subject, message_text):
     """Create a message for an email.
 
     Args:
@@ -78,7 +115,7 @@ def createMessage(sender, to, subject, message_text):
     return {'raw': raw_message.decode()}
 
 
-def construct_message_body(data):
+def _construct_message_body(data):
     yesterday = datetime.today() - timedelta(days=1)
     message_body = (
         f"Weather score ranking for yesterday "
@@ -101,7 +138,7 @@ def construct_message_body(data):
     return message_body
 
 
-def query_build_msg_last24h(url):
+def _query_build_msg_last24h(url):
     resp = requests.get(
         url, headers={"Content-Type": "application/json"}
     )
@@ -113,31 +150,8 @@ def query_build_msg_last24h(url):
         "yuliaa001@gmail.com": "Evelyn"
     }
     subject = "Daily Weather Score Report for yesterday by DragonBot🐲"
-    message_body = construct_message_body(data)
+    message_body = _construct_message_body(data)
     return sender, tos, subject, message_body
-
-
-@sched.scheduled_job("cron", hour=7, minute=0, timezone="America/New_York")
-def send_daily_report():
-    print("Query for daily report...")
-    sender, tos, subject, message_body = query_build_msg_last24h(PROD_API_URL)
-    print(f"Message constructed:\n\n{message_body}\n\n")
-    print("Scheduled email: sending...")
-    with open(parent/'token.pickle', 'rb') as token:
-        creds = pickle.load(token)
-    service = build('gmail', 'v1', credentials=creds)
-
-    for address, user in tos.items():
-        try:
-            greeting = f"Hi {user},\n\n"
-            message_text = greeting + message_body
-            msg = createMessage(sender, address, subject, message_text)
-            sendMessage(service, sender, msg)
-            print(f"{datetime.now()}: Scheduled email successfully sent to "
-                  f"recipient: {address}")
-        except Exception as e:
-            print(f"Scheduled email failed to send to recipient "
-                  f"{address}: {e}")
 
 
 # sender, tos, subject, message_body = query_build_msg_last24h(TEST_API_URL)

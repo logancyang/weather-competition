@@ -94,7 +94,7 @@ A sample weather object from AccuWeather API:
 }
 
 V0 scoring formula:
-    score = 100 - abs(T - [range])
+    score = 100 - abs(T - [range]) * TEMP_PENALTY_MULT
             - abs(H - [range]) * HUMID_PENALTY_MULT
             - I(clouds>=90) * CLOUD_PENALTY
             - I(HasPrecipitation) * PRECIP_PENALTY
@@ -110,6 +110,7 @@ T_UPPER = 79
 T_LOWER = 60
 H_UPPER = 60
 H_LOWER = 35
+TEMP_PENALTY_MULT = 1.5
 HUMID_PENALTY_MULT = 0.5
 CLOUD_PENALTY = 10
 PRECIP_PENALTY = 40
@@ -132,10 +133,10 @@ def score_func(weather):
 
     temp_penalty = 0
     if temp < T_LOWER:
-        temp_penalty = T_LOWER - temp
+        temp_penalty = (T_LOWER - temp) * TEMP_PENALTY_MULT
         descriptions['cold'] = True
     elif temp > T_UPPER:
-        temp_penalty = temp - T_UPPER
+        temp_penalty = (temp - T_UPPER) * TEMP_PENALTY_MULT
         descriptions['hot'] = True
 
     humid_penalty = 0

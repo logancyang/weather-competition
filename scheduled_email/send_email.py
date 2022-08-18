@@ -32,7 +32,7 @@ spec.loader.exec_module(settings)
 # NOTE: Cities in the email needs to be appended to this url
 CITY_NAMES = [
     "New York", "Seattle", "Dallas", "San Diego", "San Jose",
-    "Denver", "Tokyo", "Atlanta"
+    "Denver", "Tokyo", "Atlanta", "Austin", "Reno", "Portland"
 ]
 PROD_API_URL_PREFIX = settings.DRAGONBOT_URL
 TEST_API_URL = settings.TEST_URL
